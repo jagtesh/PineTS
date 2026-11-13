@@ -59,8 +59,8 @@ export function vwap(context: any) {
             state.lastIdx = context.idx;
         }
 
-        const currentPrice = Series.from(source).get(0);
-        const currentVolume = Series.from(context.data.volume).get(0);
+        const currentPrice = Series.val(source);
+        const currentVolume = Series.val(context.data.volume);
 
         let cumulativePV = state.prevCumulativePV;
         let cumulativeVolume = state.prevCumulativeVolume;
@@ -73,7 +73,7 @@ export function vwap(context: any) {
             reset = !!Series.from(args[1]).get(0);
         } else {
             // Detect new session (new trading day) using exchange timezone
-            const currentOpenTime = Series.from(context.data.openTime).get(0);
+            const currentOpenTime = Series.val(context.data.openTime);
             const timezone = context.pine?.syminfo?.timezone || 'UTC';
             const parts = getDatePartsInTimezone(currentOpenTime, timezone);
             const currentSessionDate = `${parts.year}-${String(parts.month).padStart(2, '0')}-${String(parts.day).padStart(2, '0')}`;

@@ -4,7 +4,7 @@ import { Series } from '../../../Series';
 
 export function pow(context: any) {
     return (source: any, power: any) => {
-        return Math.pow(Series.from(source).get(0), Series.from(power).get(0));
+        return Math.pow(Series.val(source), Series.val(power));
     };
 }
 

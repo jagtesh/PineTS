@@ -41,7 +41,7 @@ export function cum(context: any) {
             state.lastIdx = context.idx;
         }
 
-        const currentValue = Series.from(source).get(0);
+        const currentValue = Series.val(source);
 
         // An na bar returns na and adds nothing (TradingView), so bars before the first value are na too.
         if (isNaN(currentValue)) {

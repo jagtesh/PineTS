@@ -91,7 +91,7 @@ export class NAHelper {
         // omits the argument, the parameter ends up holding the helper itself
         // — which must be recognised as NA, not as a regular object.
         if (series instanceof NAHelper) return true;
-        const val = Series.from(series).get(0);
+        const val = Series.val(series);
         if (val instanceof NAHelper) return true;
         // null/undefined are always na
         if (val === null || val === undefined) return true;
@@ -147,16 +147,16 @@ export class AlertHelper {
     get freq_once_per_bar_close() { return ALERT_FREQ.freq_once_per_bar_close; }
 
     param(source: any, _index?: number, _id?: string) {
-        return Series.from(source).get(0);
+        return Series.val(source);
     }
 
     @silentInSecondary
     any(...args: any[]): void {
         const injectedCallsiteId = extractCallsiteId(args);
         const [message, freq] = spreadNamedArgs(args, ALERT_PARAMS);
-        const msg = Series.from(message).get(0);
+        const msg = Series.val(message);
         // Earlier PineTS versions used 'alert.freq_all', ...: accept those strings too.
-        const given = freq ? Series.from(freq).get(0) : ALERT_FREQ.freq_once_per_bar;
+        const given = freq ? Series.val(freq) : ALERT_FREQ.freq_once_per_bar;
         const f = typeof given === 'string' && given.startsWith('alert.freq_') ? given.slice('alert.freq_'.length) : given;
 
         // Extract callsite ID: from transpiler-injected __callsiteId, or fallback counter
@@ -260,13 +260,13 @@ export class Core {
     }
 
     na(series: any) {
-        const val = Series.from(series).get(0);
+        const val = Series.val(series);
         // The na string is the empty string: na("") is true on TradingView. A deleted drawing is na.
         return val === null || val === undefined || val === '' || (typeof val === 'number' && isNaN(val)) || (typeof val === 'object' && val._deleted === true);
     }
     nz(series: any, replacement: number = 0) {
-        const val = Series.from(series).get(0);
-        const rep = Series.from(replacement).get(0);
+        const val = Series.val(series);
+        const rep = Series.val(replacement);
         return (val === null || val === undefined || (typeof val === 'number' && isNaN(val))) ? rep : val;
     }
     fixnan(series: any) {
@@ -289,7 +289,7 @@ export class Core {
     @silentInSecondary
     alertcondition(...args: any[]) {
         const [condition, title, message] = spreadNamedArgs(args, ALERTCONDITION_PARAMS);
-        const cond = Series.from(condition).get(0);
+        const cond = Series.val(condition);
 
         const barIdx = this.context.idx;
 
@@ -317,8 +317,8 @@ export class Core {
         if (this._acFiredKeys.has(gateKey)) return;
         this._acFiredKeys.add(gateKey);
 
-        const t = title ? Series.from(title).get(0) : '';
-        const m = message ? Series.from(message).get(0) : '';
+        const t = title ? Series.val(title) : '';
+        const m = message ? Series.val(message) : '';
 
         this.context.alerts.push({
             type: 'alertcondition',
@@ -485,12 +485,12 @@ export class Core {
 
     //types
     bool(series: any) {
-        const val = Series.from(series).get(0);
+        const val = Series.val(series);
         if (typeof val === 'boolean') return val;
         return val !== null && val !== undefined && !isNaN(val) && val !== 0;
     }
     int(series: any) {
-        const val = Series.from(series).get(0);
+        const val = Series.val(series);
         if (typeof val !== 'number')
             throw new Error(
                 `Cannot call "int" with argument "x"="${val}". An argument of "literal string" type was used but a "simple int" is expected.`,
@@ -498,7 +498,7 @@ export class Core {
         return Math.trunc(val);
     }
     float(series: any) {
-        const val = Series.from(series).get(0);
+        const val = Series.val(series);
         if (typeof val !== 'number')
             throw new Error(
                 `Cannot call "float" with argument "x"="${val}". An argument of "literal string" type was used but a "const float" is expected.`,
@@ -508,7 +508,7 @@ export class Core {
     string(series: any) {
         //Pine Script seems to be throwing an error for any argument that is not a string
         //the following implementation might need to be updated in the future
-        const val = Series.from(series).get(0);
+        const val = Series.val(series);
         // string(na) is the na string, which is the empty string.
         if (val === null || val === undefined || (typeof val === 'number' && isNaN(val))) return '';
         return val.toString();

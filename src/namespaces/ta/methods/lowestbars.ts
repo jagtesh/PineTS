@@ -17,7 +17,7 @@ export function lowestbars(context: any) {
             _length = source;
             source = context.data.low;
         }
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
         const series = Series.from(source);
 
         // As on TradingView (since 2026-10-09): the last `length` non-na values (the calls' in a local

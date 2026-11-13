@@ -84,7 +84,7 @@ function rankCorrelation(values: number[], length: number): number {
  */
 export function rci(context: any) {
     return (source: any, _length: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
         if (!validLength(length)) return NaN;
 
         if (!context.taState) context.taState = {};

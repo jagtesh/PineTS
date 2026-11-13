@@ -116,7 +116,7 @@ export function entry(context: any) {
         // current position), Pine ADDS the absolute current position to the
         // requested qty so that one market order both flattens the prior
         // position AND opens the new direction with the requested size.
-        const currentPrice = brokerPrice(context, Series.from(context.data.close).get(0));
+        const currentPrice = brokerPrice(context, Series.val(context.data.close));
 
         // Determine order type from limit/stop presence
         let orderType: 'market' | 'limit' | 'stop' | 'stop-limit' = 'market';
@@ -140,7 +140,7 @@ export function entry(context: any) {
         if (baseQty <= 0 && !isReversal) return;
         const totalQty = isReversal ? Math.abs(currentSize) + baseQty : baseQty;
 
-        const currentTime = Series.from(context.data.openTime).get(0);
+        const currentTime = Series.val(context.data.openTime);
 
         const orderObj: Order = {
             id: idValue,

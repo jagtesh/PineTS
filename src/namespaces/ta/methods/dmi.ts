@@ -27,8 +27,8 @@ import { Series } from '../../../Series';
  */
 export function dmi(context: any) {
     return (_diLength: any, _adxSmoothing: any, _callId?: string) => {
-        const diLength = Series.from(_diLength).get(0);
-        const adxSmoothing = Series.from(_adxSmoothing).get(0);
+        const diLength = Series.val(_diLength);
+        const adxSmoothing = Series.val(_adxSmoothing);
 
         if (!context.taState) context.taState = {};
         const stateKey = _callId || `dmi_${diLength}_${adxSmoothing}`;

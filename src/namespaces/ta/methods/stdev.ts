@@ -7,7 +7,7 @@ export function stdev(context: any) {
     return (source: any, _length: any, ...rest: any[]) => {
         // The transpiler appends the call id after the optional `biased` argument.
         const _callId: string | undefined = typeof rest[rest.length - 1] === 'string' ? rest.pop() : undefined;
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
         const bias = rest.length === 0 || !!Series.from(rest[0]).get(0);
         const series = Series.from(source);
 

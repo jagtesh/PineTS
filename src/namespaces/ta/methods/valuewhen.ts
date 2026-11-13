@@ -31,9 +31,9 @@ export function valuewhen(context: any) {
             state.lastIdx = context.idx;
         }
 
-        const cond = Series.from(condition).get(0);
-        const val = Series.from(source).get(0);
-        const occurrence = Series.from(_occurrence).get(0);
+        const cond = Series.val(condition);
+        const val = Series.val(source);
+        const occurrence = Series.val(_occurrence);
 
         state.pending = !!cond;
         state.pendingValue = val;

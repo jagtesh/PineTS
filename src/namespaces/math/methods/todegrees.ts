@@ -13,7 +13,7 @@ import { Series } from '../../../Series';
  */
 export function todegrees(context: any) {
     return (radians: any) => {
-        const value = Series.from(radians).get(0);
+        const value = Series.val(radians);
         if (value === null || value === undefined || Number.isNaN(value)) {
             return NaN;
         }

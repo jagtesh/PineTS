@@ -4,7 +4,7 @@ import { Series } from '../../../Series';
 
 export function max(context: any) {
     return (...source: any[]) => {
-        const args = source.map((e) => Series.from(e).get(0));
+        const args = source.map((e) => Series.val(e));
         return Math.max(...args);
     };
 }

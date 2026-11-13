@@ -20,8 +20,8 @@ import { Series } from '../../../Series';
  */
 export function tsi(context: any) {
     return (source: any, _shortLength: any, _longLength: any, _callId?: string) => {
-        const shortLength = Series.from(_shortLength).get(0);
-        const longLength = Series.from(_longLength).get(0);
+        const shortLength = Series.val(_shortLength);
+        const longLength = Series.val(_longLength);
 
         if (!context.taState) context.taState = {};
         const stateKey = _callId || `tsi_${shortLength}_${longLength}`;
@@ -95,7 +95,7 @@ export function tsi(context: any) {
             state.lastIdx = context.idx;
         }
 
-        const currentSource = Series.from(source).get(0);
+        const currentSource = Series.val(source);
 
         // An na bar leaves the averages as they were, and the change on the next bar is na too (it
         // needs the value before it), as on TradingView.

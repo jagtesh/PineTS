@@ -303,7 +303,7 @@ export class Context {
                 // TradingView returns 00:00 UTC of the trading day the bar belongs to.
                 // For daily+ timeframes on 24/7 markets, this equals the bar's close date
                 // (i.e. the date the bar settles / completes).
-                const closeTime = Series.from(_this.data.closeTime).get(0);
+                const closeTime = Series.val(_this.data.closeTime);
                 if (isNaN(closeTime)) return NaN;
                 const timezone = _this.pine?.syminfo?.timezone || 'UTC';
                 const parts = getDatePartsInTimezone(closeTime, timezone);

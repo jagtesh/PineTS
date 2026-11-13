@@ -4,7 +4,7 @@ import { Series } from '../../../Series';
 
 export function atan(context: any) {
     return (source: any) => {
-        return Math.atan(Series.from(source).get(0));
+        return Math.atan(Series.val(source));
     };
 }
 

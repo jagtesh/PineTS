@@ -4,7 +4,7 @@ import { Series } from '../../../Series';
 
 export function floor(context: any) {
     return (source: any) => {
-        return Math.floor(Series.from(source).get(0));
+        return Math.floor(Series.val(source));
     };
 }
 

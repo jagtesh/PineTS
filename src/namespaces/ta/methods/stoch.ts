@@ -48,16 +48,16 @@ function result(context: any, state: StochState, value: number): number {
  */
 export function stoch(context: any) {
     return (source: any, high: any, low: any, _length: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
 
         if (!context.taState) context.taState = {};
         const stateKey = _callId || `stoch_${length}`;
         const state: StochState = (context.taState[stateKey] ??= new StochState());
 
         // Get current values
-        const currentSource = Series.from(source).get(0);
-        const currentHigh = Series.from(high).get(0);
-        const currentLow = Series.from(low).get(0);
+        const currentSource = Series.val(source);
+        const currentHigh = Series.val(high);
+        const currentLow = Series.val(low);
 
         if (context.idx !== state.lastIdx) {
             state.prev = state.cur;

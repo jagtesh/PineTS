@@ -12,8 +12,8 @@ const roundHalfAwayFromZero = (x: number): number => (Number.isNaN(x) ? NaN : Ma
  */
 export function round(context: any) {
     return (source: any, precision?: any) => {
-        const value = Series.from(source).get(0);
-        const digits = precision === undefined || precision === null ? 0 : Series.from(precision).get(0);
+        const value = Series.val(source);
+        const digits = precision === undefined || precision === null ? 0 : Series.val(precision);
         if (!digits) return roundHalfAwayFromZero(value);
         const scale = 10 ** digits;
         const fine = Math.abs(value) * scale * scale;

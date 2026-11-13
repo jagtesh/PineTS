@@ -4,7 +4,7 @@ import { Series } from '../../../Series';
 
 export function rsi(context: any) {
     return (source: any, _period: any, _callId?: string) => {
-        const period = Series.from(_period).get(0);
+        const period = Series.val(_period);
 
         // Incremental RSI calculation
         if (!context.taState) context.taState = {};
@@ -46,7 +46,7 @@ export function rsi(context: any) {
             state.lastIdx = context.idx;
         }
 
-        const currentValue = Series.from(source).get(0);
+        const currentValue = Series.val(source);
 
         // An na bar does not advance the averages, and the change on the next bar is na too (it
         // needs the value before it), so that bar returns na and only stores its value, as on TradingView.

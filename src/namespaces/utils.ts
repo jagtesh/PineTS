@@ -95,9 +95,9 @@ export function parseArgsForPineParams<T>(args: any[], signatures: any[], types:
     // a series. Without this a positional number / string / bool failed its type check and dropped
     // every argument after it, and a named plot handle or title was stored as a Series.
     const isSeriesValue = (value: any) => value instanceof Series || isScalarHelper(value);
-    const readScalar = (value: any, type: string) => (SCALAR_TYPES.has(type) && isSeriesValue(value) ? Series.from(value).get(0) : value);
+    const readScalar = (value: any, type: string) => (SCALAR_TYPES.has(type) && isSeriesValue(value) ? Series.val(value) : value);
     const readNamed = (value: any, type: string) =>
-        type !== undefined && type !== 'series' && type !== 'any' && isSeriesValue(value) ? Series.from(value).get(0) : value;
+        type !== undefined && type !== 'series' && type !== 'any' && isSeriesValue(value) ? Series.val(value) : value;
 
     const valid = new Array(signatures.length).fill(true);
     for (let i = 0; i < args.length; i++) {

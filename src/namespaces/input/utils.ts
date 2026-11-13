@@ -22,7 +22,7 @@ export function resolveSourceName(context: any, name: string): number | undefine
     if (!SOURCE_BUILTINS.has(name)) return undefined;
     const series = context?.data?.[name];
     if (series == null) return undefined;
-    return Series.from(series).get(0);
+    return Series.val(series);
 }
 const INPUT_SIGNATURES = [
     ['defval', 'title', 'tooltip', 'inline', 'group', 'display'],

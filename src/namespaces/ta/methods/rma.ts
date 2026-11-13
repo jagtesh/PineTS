@@ -4,7 +4,7 @@ import { Series } from '../../../Series';
 
 export function rma(context: any) {
     return (source: any, _period: any, _callId?: string) => {
-        const period = Series.from(_period).get(0);
+        const period = Series.val(_period);
 
         // Incremental RMA calculation
         if (!context.taState) context.taState = {};
@@ -36,7 +36,7 @@ export function rma(context: any) {
             state.lastIdx = context.idx;
         }
 
-        const currentValue = Series.from(source).get(0);
+        const currentValue = Series.val(source);
 
         // An na bar returns na and leaves the average as it was (TradingView skips it, like ta.ema).
         if (currentValue === null || currentValue === undefined || Number.isNaN(currentValue)) {

@@ -6,7 +6,7 @@ import { CarryHistory } from '../utils/history';
 
 export function dev(context: any) {
     return (source: any, _length: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
         const series = Series.from(source);
 
         // Mean Absolute Deviation, as TradingView computes it: the mean is ta.sma (the last `length`

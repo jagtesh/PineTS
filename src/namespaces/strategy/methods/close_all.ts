@@ -77,7 +77,7 @@ export function close_all(context: any) {
             qty: 0, // resolved at fill time (sum of |all open trades|)
             type: 'market',
             bar: context.idx,
-            time: Series.from(context.data.openTime).get(0),
+            time: Series.val(context.data.openTime),
             status: 'pending',
             category: 'exit',
             from_entry: '', // empty == match-all (within the snapshot)

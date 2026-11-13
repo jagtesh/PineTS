@@ -28,9 +28,9 @@ export function alma(context: any) {
     return (source: any, _period: any, _offset: any, _sigma: any, ...rest: any[]) => {
         // The transpiler appends the call id after the optional `floor` argument.
         const _callId: string | undefined = typeof rest[rest.length - 1] === 'string' ? rest.pop() : undefined;
-        const period = Series.from(_period).get(0);
-        const offset = Series.from(_offset).get(0);
-        const sigma = Series.from(_sigma).get(0);
+        const period = Series.val(_period);
+        const offset = Series.val(_offset);
+        const sigma = Series.val(_sigma);
         const floor = rest.length > 0 && !!Series.from(rest[0]).get(0);
 
         if (!context.taState) context.taState = {};

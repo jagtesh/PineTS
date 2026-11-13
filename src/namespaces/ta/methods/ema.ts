@@ -4,7 +4,7 @@ import { Series } from '../../../Series';
 
 export function ema(context: any) {
     return (source: any, _period: any, _callId?: string) => {
-        const period = Series.from(_period).get(0);
+        const period = Series.val(_period);
 
         // Incremental EMA calculation
         if (!context.taState) context.taState = {};
@@ -38,7 +38,7 @@ export function ema(context: any) {
             state.lastIdx = context.idx;
         }
 
-        const currentValue = Series.from(source).get(0);
+        const currentValue = Series.val(source);
 
         if (currentValue === null || currentValue === undefined || isNaN(currentValue)) {
             return NaN;

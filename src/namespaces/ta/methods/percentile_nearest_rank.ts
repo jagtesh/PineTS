@@ -16,8 +16,8 @@ import { nearestRank, PercentileArray } from '../utils/percentileArray';
  */
 export function percentile_nearest_rank(context: any) {
     return (source: any, _length: any, _percentage: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
-        const percentage = Series.from(_percentage).get(0);
+        const length = Series.val(_length);
+        const percentage = Series.val(_percentage);
         const series = Series.from(source);
 
         if (!validLength(length)) {

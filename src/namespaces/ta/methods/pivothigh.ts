@@ -12,8 +12,8 @@ export function pivothigh(context: any) {
             _leftbars = source;
             source = context.data.high;
         }
-        const leftbars = Series.from(_leftbars).get(0);
-        const rightbars = Series.from(_rightbars).get(0);
+        const leftbars = Series.val(_leftbars);
+        const rightbars = Series.val(_rightbars);
 
         // Only the candidate confirmed on the current bar is examined
         return context.precision(pivot(context, _callId, source, leftbars, rightbars, true));

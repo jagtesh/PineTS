@@ -5,8 +5,8 @@ import { LinregCall } from '../utils/barRing';
 
 export function linreg(context: any) {
     return (source: any, _length: any, _offset: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
-        const offset = Series.from(_offset).get(0);
+        const length = Series.val(_length);
+        const offset = Series.val(_offset);
 
         // Linear Regression over the window as TradingView reads it (in a local block, bars the block
         // skipped are read from slots written earlier, or repeat the last call's value: LinregCall)

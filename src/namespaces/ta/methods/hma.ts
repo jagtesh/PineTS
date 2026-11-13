@@ -5,7 +5,7 @@ import { CallWindow } from '../utils/windows';
 
 export function hma(context: any) {
     return (source: any, _period: any, _callId?: string) => {
-        const period = Series.from(_period).get(0);
+        const period = Series.val(_period);
 
         // Hull Moving Average: HMA = WMA(2*WMA(n/2) - WMA(n), sqrt(n))
         const halfPeriod = Math.floor(period / 2);

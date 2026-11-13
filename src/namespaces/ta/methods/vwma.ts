@@ -5,7 +5,7 @@ import { nonNaWindow } from '../utils/nonNaWindow';
 
 export function vwma(context: any) {
     return (source: any, _period: any, _callId?: string) => {
-        const period = Series.from(_period).get(0);
+        const period = Series.val(_period);
         const series = Series.from(source);
         const volume = Series.from(context.data.volume);
         const stateKey = _callId || `vwma_${period}`;

@@ -154,7 +154,7 @@ export function footprint(context: any) {
             return NaN;
         }
 
-        const openTime = Series.from(context.data.openTime).get(0);
+        const openTime = Series.val(context.data.openTime);
         if (store.loadedVersion === -1) {
             await load(context, store, undefined);
         } else if (context.dataVersion > store.loadedVersion) {
@@ -166,7 +166,7 @@ export function footprint(context: any) {
 
         if (!store.built.has(openTime)) {
             // The candle's range extends the rows over its wicks, like the chart does.
-            const range = { low: Series.from(context.data.low).get(0), high: Series.from(context.data.high).get(0) };
+            const range = { low: Series.val(context.data.low), high: Series.val(context.data.high) };
             store.built.set(
                 openTime,
                 FootprintObject.build(

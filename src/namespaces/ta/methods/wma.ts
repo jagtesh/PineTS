@@ -19,7 +19,7 @@ class WmaState {
 
 export function wma(context: any) {
     return (source: any, _period: any, _callId?: string) => {
-        const period = Series.from(_period).get(0);
+        const period = Series.val(_period);
         if (!(period >= 1)) return NaN;
 
         // Weighted Moving Average over the last `period` bars (in a local block, a skipped bar repeating

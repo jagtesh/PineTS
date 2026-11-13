@@ -210,8 +210,8 @@ export function security(context: any) {
 
         const isLTF = ctxSeconds > reqSeconds;
 
-        const myOpenTime = Series.from(context.data.openTime).get(0);
-        const myCloseTime = Series.from(context.data.closeTime).get(0);
+        const myOpenTime = Series.val(context.data.openTime);
+        const myCloseTime = Series.val(context.data.closeTime);
 
         // On the realtime (live) bar, lookahead_off has no effect per TradingView behavior:
         // the current developing HTF values are returned instead of the previous completed bar.

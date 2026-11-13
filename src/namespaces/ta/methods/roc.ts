@@ -5,7 +5,7 @@ import { CarryHistory } from '../utils/history';
 
 export function roc(context: any) {
     return (source: any, _length: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
 
         // ROC = ((current - previous) / previous) * 100, previous `length` bars back (in a local block,
         // a skipped bar repeating the last call's value)

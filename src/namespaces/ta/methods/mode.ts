@@ -13,7 +13,7 @@ import { nonNaWindow } from '../utils/nonNaWindow';
  */
 export function mode(context: any) {
     return (source: any, _length: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
         const series = Series.from(source);
 
         const window = nonNaWindow(context, _callId || `mode_${length}`, series, length, 'counts');

@@ -6,7 +6,7 @@ export function atr(context: any): //
 //PineScript signature
 (length: number) => Series {
     return (_period: number, _callId?: string) => {
-        const period = Series.from(_period).get(0);
+        const period = Series.val(_period);
 
         // Incremental ATR calculation
         if (!context.taState) context.taState = {};

@@ -90,7 +90,7 @@ export function order(context: any) {
         // at the call site using the current close (the stop price of a stop or
         // stop-limit order, the limit price of a limit order) â€” matching
         // TradingView's backtest accounting.
-        const currentPrice = brokerPrice(context, Series.from(context.data.close).get(0));
+        const currentPrice = brokerPrice(context, Series.val(context.data.close));
         // Limit / stop levels go on the mintick grid by the order's side, as for strategy.entry
         // (TV: a buy limit at position_avg_price * 0.999 = 63,914.94108 works at 63,914.94).
         const mintick = context.pine?.syminfo?.mintick ?? 0;
@@ -110,7 +110,7 @@ export function order(context: any) {
             orderType = 'stop';
         }
 
-        const currentTime = Series.from(context.data.openTime).get(0);
+        const currentTime = Series.val(context.data.openTime);
 
         const orderObj: Order = {
             id: idValue,

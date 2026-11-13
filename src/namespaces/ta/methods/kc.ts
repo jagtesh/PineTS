@@ -15,14 +15,14 @@ import { Series } from '../../../Series';
  */
 export function kc(context: any) {
     return (source: any, _length: any, _mult: any, _useTrueRange?: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
-        const mult = Series.from(_mult).get(0);
+        const length = Series.val(_length);
+        const mult = Series.val(_mult);
         let useTrueRange = true;
         if (typeof _useTrueRange === 'string') {
             //this is the _callId passed by the transpiler
             _callId = _useTrueRange;
         } else if (_useTrueRange !== undefined) {
-            useTrueRange = Series.from(_useTrueRange).get(0);
+            useTrueRange = Series.val(_useTrueRange);
         }
 
         // Calculate span
@@ -42,7 +42,7 @@ export function kc(context: any) {
             span = high - low;
         }
 
-        const currentValue = Series.from(source).get(0);
+        const currentValue = Series.val(source);
 
         if (!context.taState) context.taState = {};
         const stateKey = _callId || `kc_${length}_${mult}_${useTrueRange}`;

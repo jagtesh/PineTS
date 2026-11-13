@@ -567,10 +567,10 @@ function applyOca(strategy: StrategyState, filled: Order, filledQty?: number, no
  */
 export function exitBeforeAdverseExtreme(context: any): boolean {
     if (!context.strategy || context.strategy.position_size === 0) return false;
-    const open = Series.from(context.data.open).get(0);
-    const high = Series.from(context.data.high).get(0);
-    const low = Series.from(context.data.low).get(0);
-    const close = Series.from(context.data.close).get(0);
+    const open = Series.val(context.data.open);
+    const high = Series.val(context.data.high);
+    const low = Series.val(context.data.low);
+    const close = Series.val(context.data.close);
     const at = firstExitLegOnPath(context, barPath(open, high, low, close));
     return at !== undefined && at < 1;
 }
@@ -642,11 +642,11 @@ export function processStrategyOrders(context: any, deferredOnly = false): void 
     const { pending_orders } = strategy;
 
     // Get current bar's OHLC data
-    const openPrice = Series.from(context.data.open).get(0);
-    const highPrice = Series.from(context.data.high).get(0);
-    const lowPrice = Series.from(context.data.low).get(0);
-    const closePrice = Series.from(context.data.close).get(0);
-    const currentTime = Series.from(context.data.openTime).get(0);
+    const openPrice = Series.val(context.data.open);
+    const highPrice = Series.val(context.data.high);
+    const lowPrice = Series.val(context.data.low);
+    const closePrice = Series.val(context.data.close);
+    const currentTime = Series.val(context.data.openTime);
 
     // Mark-to-market at OPEN price so fill logic / risk checks see accurate equity.
     // Excursions follow the bar's path (see excEndBar / excReplay).
@@ -1109,8 +1109,8 @@ export function processOrdersOnClose(context: any): void {
     const strategy: StrategyState = context.strategy;
     if (!strategy || strategy.pending_orders.length === 0) return;
     const onClose = strategy.config.process_orders_on_close === true;
-    const closePrice = Series.from(context.data.close).get(0);
-    const currentTime = Series.from(context.data.openTime).get(0);
+    const closePrice = Series.val(context.data.close);
+    const currentTime = Series.val(context.data.openTime);
     setFillAt(context, 3);
     const isMarketClose = (o: Order) =>
         o.category === 'exit' &&
@@ -1295,7 +1295,7 @@ function applySlippage(context: any, direction: number, nominalPrice: number): n
 function updateMaxContractsHeld(strategy: StrategyState, context?: any, delta = 0, price = NaN, orderFill = true): void {
     const batch = (strategy as any)._openFills;
     const atOpen = () => {
-        const open = Series.from(context.data.open).get(0);
+        const open = Series.val(context.data.open);
         const slip = (strategy.config.slippage ?? 0) * (context.pine?.syminfo?.mintick ?? 0.01);
         return Math.abs(price - open) <= slip + 1e-9 * Math.abs(open);
     };
@@ -1410,8 +1410,8 @@ function riskState(context: any): RiskState {
 
 const dayFormatters = new Map<string, Intl.DateTimeFormat>();
 function tradingDay(context: any): string {
-    const open = Series.from(context.data.openTime).get(0);
-    const close = Series.from(context.data.closeTime).get(0);
+    const open = Series.val(context.data.openTime);
+    const close = Series.val(context.data.closeTime);
     if (Number.isFinite(close) && close - open >= 86400000 - 1000) return String(open);
     const tz = context.pine?.syminfo?.timezone || 'UTC';
     let f = dayFormatters.get(tz);
@@ -1439,7 +1439,7 @@ export function riskBlocksOrder(context: any, order: Order): boolean {
 function riskCloseOut(context: any, reason: string, price: number, scope: 'day' | 'forever'): void {
     const strategy: StrategyState = context.strategy;
     const st = riskState(context);
-    const time = Series.from(context.data.openTime).get(0);
+    const time = Series.val(context.data.openTime);
     // strategy.close / close_all orders due at the open where the rule triggers still fill there first
     // (TV, BTCUSDT 1h, max_intraday_filled_orders(4): close_all queued after a pyramiding add, both at
     // one open → the three older lots "Close position order", only the add closed under the rule).
@@ -1485,7 +1485,7 @@ export function riskStartBar(context: any): void {
                         qty: Math.abs(strategy.position_size),
                         type: 'market',
                         bar: context.idx - 1,
-                        time: Series.from(context.data.openTime).get(0),
+                        time: Series.val(context.data.openTime),
                         status: 'pending',
                         comment: RISK_REASON.consDays,
                         _risk: true,
@@ -1514,7 +1514,7 @@ function riskOpenFills(context: any): boolean {
     if (!st || st.dayStartBar !== context.idx || !(context._pathAt === undefined || context._pathAt === 0)) return false;
     const seg = context._excSeg;
     if (seg && seg.scale > 0) return false;
-    st.dayStartEquity = st.dayMaxEquity = computeEquityAtPrice(context, Series.from(context.data.open).get(0));
+    st.dayStartEquity = st.dayMaxEquity = computeEquityAtPrice(context, Series.val(context.data.open));
     return true;
 }
 
@@ -1590,7 +1590,7 @@ export function riskAtBarClose(context: any): void {
     if (!st || (st as any)._drawdownAtClose !== context.idx) return;
     (st as any)._drawdownAtClose = undefined;
     setFillAt(context, 3);
-    riskCloseOut(context, RISK_REASON.drawdown, Series.from(context.data.close).get(0), 'forever');
+    riskCloseOut(context, RISK_REASON.drawdown, Series.val(context.data.close), 'forever');
 }
 
 /** After the bar's fills: max_intraday_loss at the bar's adverse extreme for the open position. */
@@ -1603,7 +1603,7 @@ export function riskEndOfBarFills(context: any): void {
     const fav = Series.from(context.data[dir === 1 ? 'high' : 'low']).get(0);
     st.dayMaxEquity = Math.max(st.dayMaxEquity, computeEquityAtPrice(context, fav));
     const adverse = Series.from(context.data[dir === 1 ? 'low' : 'high']).get(0);
-    const path = barPath(Series.from(context.data.open).get(0), Series.from(context.data.high).get(0), Series.from(context.data.low).get(0), Series.from(context.data.close).get(0));
+    const path = barPath(Series.val(context.data.open), Series.val(context.data.high), Series.val(context.data.low), Series.val(context.data.close));
     setFillAt(context, path[1] === adverse ? 1 : 2);
     riskIntradayLoss(context, adverse);
 }
@@ -2223,10 +2223,10 @@ export function beginStrategyBar(context: any): void {
     const strategy: StrategyState | undefined = context.strategy;
     if (!strategy) return;
     const path = barPath(
-        Series.from(context.data.open).get(0),
-        Series.from(context.data.high).get(0),
-        Series.from(context.data.low).get(0),
-        Series.from(context.data.close).get(0),
+        Series.val(context.data.open),
+        Series.val(context.data.high),
+        Series.val(context.data.low),
+        Series.val(context.data.close),
     );
     const s: any = strategy;
     context._exc = { bar: context.idx, path, events: [], start: { netprofit: strategy.netprofit, lots: excLots(strategy) }, pre: s._excPreTicks ?? [] };
@@ -2533,11 +2533,11 @@ export function processExitOrders(context: any, phase: 'market' | 'open' | 'intr
     const strategy: StrategyState = context.strategy;
     if (strategy.pending_orders.length === 0) return;
 
-    const openPrice = Series.from(context.data.open).get(0);
-    const highPrice = Series.from(context.data.high).get(0);
-    const lowPrice = Series.from(context.data.low).get(0);
-    const closePrice = Series.from(context.data.close).get(0);
-    const currentTime = Series.from(context.data.openTime).get(0);
+    const openPrice = Series.val(context.data.open);
+    const highPrice = Series.val(context.data.high);
+    const lowPrice = Series.val(context.data.low);
+    const closePrice = Series.val(context.data.close);
+    const currentTime = Series.val(context.data.openTime);
     const mintick = context.pine?.syminfo?.mintick ?? 0.01;
     let anyExitFilledThisBar = false;
     const limitSlack = limitFillSlack(context);
@@ -2574,10 +2574,10 @@ export function processExitOrders(context: any, phase: 'market' | 'open' | 'intr
     // Exit orders are taken in the order the bar's path reaches their first stop / limit leg: a
     // second exit's stop reached before the first exit's target fills first (TV).
     const exitPath = barPath(
-        Series.from(context.data.open).get(0),
-        Series.from(context.data.high).get(0),
-        Series.from(context.data.low).get(0),
-        Series.from(context.data.close).get(0),
+        Series.val(context.data.open),
+        Series.val(context.data.high),
+        Series.val(context.data.low),
+        Series.val(context.data.close),
     );
     const ranked = strategy.pending_orders
         .map((o, i) => ({ o, i, at: phase === 'intrabar' && (o.category ?? 'entry') === 'exit' ? exitFirstLegAt(context, o, exitPath) : 0 }))
@@ -3060,9 +3060,9 @@ export function isAdverseFirstBar(context: any): boolean {
     const strategy: StrategyState = context.strategy;
     const dir = Math.sign(strategy?.position_size ?? 0);
     if (dir === 0) return false;
-    const openPrice = Series.from(context.data.open).get(0);
-    const highPrice = Series.from(context.data.high).get(0);
-    const lowPrice = Series.from(context.data.low).get(0);
+    const openPrice = Series.val(context.data.open);
+    const highPrice = Series.val(context.data.high);
+    const lowPrice = Series.val(context.data.low);
     const openCloserToHigh = Math.abs(highPrice - openPrice) <= Math.abs(openPrice - lowPrice);
     return dir === 1 ? !openCloserToHigh : openCloserToHigh;
 }
@@ -3113,11 +3113,11 @@ export function processMarginCall(context: any, checkpoint: 'open' | 'extreme' |
     // to the end, far below margin, never margin-called).
     if ((strategy as any)._risk?.haltedFrom !== undefined) return false;
 
-    const openPrice = Series.from(context.data.open).get(0);
-    const highPrice = Series.from(context.data.high).get(0);
-    const lowPrice = Series.from(context.data.low).get(0);
-    const closePrice = Series.from(context.data.close).get(0);
-    const currentTime = Series.from(context.data.openTime).get(0);
+    const openPrice = Series.val(context.data.open);
+    const highPrice = Series.val(context.data.high);
+    const lowPrice = Series.val(context.data.low);
+    const closePrice = Series.val(context.data.close);
+    const currentTime = Series.val(context.data.openTime);
     const pointValue = context.pine?.syminfo?.pointvalue ?? 1;
 
     // 'favorable' is the bar's other extreme: a margin call's own commission can leave the account
@@ -3216,7 +3216,7 @@ export function processMarginCall(context: any, checkpoint: 'open' | 'extreme' |
             const u1 = frontQty * (adversePrice - frontEntry) * positionDir * pointValue;
             const d2 = deficit - freedMargin + u1;
             if (d2 > 0) {
-                const closeP = Series.from(context.data.close).get(0);
+                const closeP = Series.val(context.data.close);
                 const trunc6 = (x: number) => Math.trunc(x * 1e6) / 1e6;
                 const cover2 = trunc6(d2 / (adversePrice * pointValue * marginFrac));
                 const q2 = Math.min(Math.abs(strategy.position_size), 4 * cover2);
@@ -3260,7 +3260,7 @@ export function processBarOrders(context: any): void {
     // calc_on_order_fills segment after the first: its starting point), for their margin check.
     if (context.strategy) {
         const seg = context._excSeg;
-        const at = seg && seg.scale > 0 ? Series.from(context.data.open).get(0) : Series.from(context.data.close).get(1);
+        const at = seg && seg.scale > 0 ? Series.val(context.data.open) : Series.from(context.data.close).get(1);
         if (Number.isFinite(at)) (context.strategy as any)._placement = { idx: context.idx, price: at, equity: computeEquityAtPrice(context, at) };
     }
     // strategy.close / close_all market orders fill at the open ahead of entries (see
@@ -3300,7 +3300,7 @@ export function processBarOrders(context: any): void {
 export function finalizeStrategyBar(context: any): void {
     if (!context.strategy) return;
     const strategy: StrategyState = context.strategy;
-    const closePrice = Series.from(context.data.close).get(0);
+    const closePrice = Series.val(context.data.close);
     markToMarket(context, closePrice);
     if (context._exc?.bar !== context.idx) beginStrategyBar(context);
     excEndBar(context);
@@ -3312,7 +3312,7 @@ export function finalizeStrategyBar(context: any): void {
     // finalizeStrategyRun). TV samples the equity curve monthly regardless
     // of the chart timeframe; we keep the last bar's equity per UTC
     // calendar month (overwrite within a month, append on rollover).
-    const barTime = Series.from(context.data.openTime).get(0);
+    const barTime = Series.val(context.data.openTime);
     if (Number.isFinite(barTime)) {
         const d = new Date(barTime);
         const monthKey = d.getUTCFullYear() * 12 + d.getUTCMonth();

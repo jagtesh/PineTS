@@ -16,7 +16,7 @@ const isNa = (v: any) => v === null || v === undefined || Number.isNaN(v);
  */
 export function percentrank(context: any) {
     return (source: any, _length: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
         const series = Series.from(source);
 
         const currentValue = series.get(0);

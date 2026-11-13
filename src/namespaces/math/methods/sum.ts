@@ -5,7 +5,7 @@ import { nonNaWindow } from '../../ta/utils/nonNaWindow';
 
 export function sum(context: any) {
     return (source: any, length: any, _callId?: string) => {
-        const len = Series.from(length).get(0);
+        const len = Series.val(length);
         const series = Series.from(source);
 
         // Sum of the last `len` non-na values (na values are skipped, as on TradingView); na while

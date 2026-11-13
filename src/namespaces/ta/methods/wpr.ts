@@ -5,7 +5,7 @@ import { nonNaWindow } from '../utils/nonNaWindow';
 
 export function wpr(context: any) {
     return (_length: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
 
         if (!context.taState) context.taState = {};
         const stateKey = _callId || `wpr_${length}`;

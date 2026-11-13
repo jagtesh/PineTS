@@ -15,7 +15,7 @@ import { nonNaWindow } from '../utils/nonNaWindow';
  */
 export function correlation(context: any) {
     return (source1: any, source2: any, _length: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
         const s1 = Series.from(source1);
         const s2 = Series.from(source2);
         const key = _callId || `correlation_${length}`;

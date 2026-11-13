@@ -56,7 +56,7 @@ function ticksToPrice(ticks: number, mintick: number): number {
 
 export function round_to_mintick(context: Context) {
     return (source: any) => {
-        const value = Series.from(source).get(0);
+        const value = Series.val(source);
         const mintick = context.pine.syminfo.mintick;
         if (!Number.isFinite(value) || !(mintick > 0) || value === 0) {
             return context.precision(Math.round(value / mintick) * mintick);

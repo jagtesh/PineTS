@@ -15,9 +15,9 @@ import { Series } from '../../../Series';
  */
 export function sar(context: any) {
     return (_start: any, _inc: any, _max: any, _callId?: string) => {
-        const start = Series.from(_start).get(0);
-        const inc = Series.from(_inc).get(0);
-        const max = Series.from(_max).get(0);
+        const start = Series.val(_start);
+        const inc = Series.val(_inc);
+        const max = Series.val(_max);
 
         if (!context.taState) context.taState = {};
         const stateKey = _callId || `sar_${start}_${inc}_${max}`;

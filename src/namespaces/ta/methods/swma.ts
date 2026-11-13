@@ -28,7 +28,7 @@ export function swma(context: any) {
         if (!context.taState[stateKey]) context.taState[stateKey] = new CallWindow(true);
         const win: CallWindow = context.taState[stateKey];
         win.begin(context.idx);
-        win.push(context.idx, Series.from(source).get(0), period, BACKFILL_FROM_SOURCE, source);
+        win.push(context.idx, Series.val(source), period, BACKFILL_FROM_SOURCE, source);
         const window = win.values(win.size);
         if (window.length < period) {
             return NaN;

@@ -15,9 +15,9 @@ export function tr(context: Context) {
         if (typeof handle_na === 'string') {
             _callId = handle_na;
         } else if (handle_na !== undefined) {
-            handleNa = Series.from(handle_na).get(0);
+            handleNa = Series.val(handle_na);
         }
-        //const handleNa = handle_na !== undefined ? Series.from(handle_na).get(0) : true;
+        //const handleNa = handle_na !== undefined ? Series.val(handle_na) : true;
 
         const high0 = context.get(context.data.high, 0);
         const low0 = context.get(context.data.low, 0);

@@ -35,7 +35,7 @@ class FlowHistory {
  */
 export function mfi(context: any) {
     return (source: any, _length: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
 
         if (!context.taState) context.taState = {};
         const stateKey = _callId || `mfi_${length}`;

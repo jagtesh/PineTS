@@ -5,8 +5,8 @@ import { nonNaWindow } from '../utils/nonNaWindow';
 
 export function bb(context: any) {
     return (source: any, _length: any, _mult: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
-        const mult = Series.from(_mult).get(0);
+        const length = Series.val(_length);
+        const mult = Series.val(_mult);
 
         if (!context.taState) context.taState = {};
         const stateKey = _callId || `bb_${length}_${mult}`;

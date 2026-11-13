@@ -86,7 +86,7 @@ export class LabelHelper {
         // Resolve Series-like objects (has data array and get method)
         if (typeof val === 'object' && Array.isArray(val.data) && typeof val.get === 'function') {
             const resolved = val.get(0);
-            // NaN from Series (e.g. color(na) → Series.from(NaN).get(0)) means na
+            // NaN from Series (e.g. color(na) → Series.val(NaN)) means na
             if (typeof resolved === 'number' && isNaN(resolved)) return null;
             return resolved;
         }

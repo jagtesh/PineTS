@@ -12,7 +12,7 @@ export function change(context: any) {
             _callId = _length;
             _length = 1;
         }
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
 
         // The value `length` bars back (in a local block, a skipped bar repeating the last call's value)
         if (!context.taState) context.taState = {};

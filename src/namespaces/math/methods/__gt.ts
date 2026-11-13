@@ -11,8 +11,8 @@ import { Series } from '../../../Series';
  */
 export function __gt(context: any) {
     return (a: any, b: any) => {
-        const valA = Series.from(a).get(0);
-        const valB = Series.from(b).get(0);
+        const valA = Series.val(a);
+        const valB = Series.val(b);
 
         if (typeof valA === 'number' && typeof valB === 'number') {
             if (isNaN(valA) || isNaN(valB)) return NaN;

@@ -435,8 +435,8 @@ export function security_lower_tf(context: any) {
 
         const secContext = cached.context;
         
-        const myOpenTime = Series.from(context.data.openTime).get(0);
-        const myCloseTime = Series.from(context.data.closeTime).get(0);
+        const myOpenTime = Series.val(context.data.openTime);
+        const myCloseTime = Series.val(context.data.closeTime);
 
         const secOpenTimes = secContext.data.openTime.data;
         const secCloseTimes = secContext.data.closeTime.data;

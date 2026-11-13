@@ -86,7 +86,7 @@ export class Timeframe {
     public change(timeframe: any): boolean {
         const tf = this.resolve(timeframe, 'timeframe.change', (s) => `Cannot parse resolution '${s}'. - Invalid format`);
 
-        const currentTime = Series.from(this.context.data.openTime).get(0);
+        const currentTime = Series.val(this.context.data.openTime);
         const prevTime = Series.from(this.context.data.openTime).get(1);
 
         if (isNaN(currentTime) || isNaN(prevTime)) return false;

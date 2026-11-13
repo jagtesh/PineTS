@@ -13,7 +13,7 @@ import { Series } from '../../../Series';
  */
 export function toradians(context: any) {
     return (degrees: any) => {
-        const value = Series.from(degrees).get(0);
+        const value = Series.val(degrees);
         if (value === null || value === undefined || Number.isNaN(value)) {
             return NaN;
         }

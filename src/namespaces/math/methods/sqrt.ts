@@ -4,7 +4,7 @@ import { Series } from '../../../Series';
 
 export function sqrt(context: any) {
     return (source: any) => {
-        return Math.sqrt(Series.from(source).get(0));
+        return Math.sqrt(Series.val(source));
     };
 }
 

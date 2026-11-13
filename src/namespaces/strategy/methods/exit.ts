@@ -116,7 +116,7 @@ export function exit(context: any) {
         // position or entry to tell the side, and for trail_price, they round away from the close
         // (in a calc_on_order_fills execution, from the fill point).
         const mintick = context.pine?.syminfo?.mintick ?? 0;
-        const currentClose = context._fillPointPrice ?? Series.from(context.data.close).get(0);
+        const currentClose = context._fillPointPrice ?? Series.val(context.data.close);
         const openTrade = (context.strategy.opentrades as any[]).find((t) => !fromEntryId || t.entry_id === fromEntryId);
         const positionDir = openTrade ? Math.sign(openTrade.size) : pendingEntry ? parseDirection(pendingEntry.direction) : 0;
         const level = (raw: number | undefined, kind: 'limit' | 'stop') =>
@@ -155,7 +155,7 @@ export function exit(context: any) {
             qty_percent: isNaValue(qtyPercent) ? undefined : qtyPercent,
             type: 'market',
             bar: context.idx,
-            time: Series.from(context.data.openTime).get(0),
+            time: Series.val(context.data.openTime),
             status: 'pending',
             category: 'exit',
             from_entry: fromEntryId,
@@ -198,7 +198,7 @@ export function exit(context: any) {
         // with the close as its peak (TV, ES: a short's trail activating at 2,013 placed on a 1,994.5
         // close, offset 4, fills at 1,998.5 on the next bar).
         if (order.trail_offset !== undefined && (trailPrice !== undefined || trailPoints !== undefined)) {
-            const close = context._fillPointPrice ?? Series.from(context.data.close).get(0);
+            const close = context._fillPointPrice ?? Series.val(context.data.close);
             for (const t of context.strategy.opentrades as any[]) {
                 if (fromEntryId && t.entry_id !== fromEntryId) continue;
                 if (order._trailByTrade?.[t.id]?.armed) continue;

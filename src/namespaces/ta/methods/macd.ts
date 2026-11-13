@@ -21,9 +21,9 @@ import { Series } from '../../../Series';
  */
 export function macd(context: any) {
     return (source: any, _fastLength: any, _slowLength: any, _signalLength: any, _callId?: string) => {
-        const fastLength = Series.from(_fastLength).get(0);
-        const slowLength = Series.from(_slowLength).get(0);
-        const signalLength = Series.from(_signalLength).get(0);
+        const fastLength = Series.val(_fastLength);
+        const slowLength = Series.val(_slowLength);
+        const signalLength = Series.val(_signalLength);
 
         // Generate unique IDs for internal EMAs
         // If _callId is provided, derive IDs from it.

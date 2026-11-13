@@ -7,7 +7,7 @@ export function avg(context: any) {
         const values = sources.map((source) => {
             // Each source is wrapped by param(), so it should be a Series
             // but check for scalar fallback
-            return Series.from(source).get(0);
+            return Series.val(source);
         });
 
         // Filter out NaN? No, avg propagates NaN

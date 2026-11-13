@@ -237,7 +237,7 @@ export class PlotHelper {
             this.context.plots[plotKey] = { data: [], options: { ...options, style: 'char' }, title, _plotKey: plotKey, _callsiteId: callsiteId };
         }
 
-        const value = Series.from(series).get(0);
+        const value = Series.val(series);
 
         this.context.plots[plotKey].data.push({
             title,
@@ -274,7 +274,7 @@ export class PlotHelper {
             this.context.plots[plotKey] = { data: [], options: { ...options, overlay }, title, _plotKey: plotKey, _callsiteId: callsiteId };
         }
 
-        const value = Series.from(series).get(0);
+        const value = Series.val(series);
 
         // Set per-point color for QFChart:
         //   - User didn't pass color  → use Pine Script default #2962ff
@@ -315,7 +315,7 @@ export class PlotHelper {
                 _callsiteId: callsiteId,
             };
         }
-        const value = Series.from(series).get(0);
+        const value = Series.val(series);
         this.context.plots[plotKey].data.push({
             title,
             time: this.context.marketData[this.context.idx].openTime,
@@ -341,7 +341,7 @@ export class PlotHelper {
         const callsiteId = extractCallsiteId(args);
         const _parsed = parseArgsForPineParams<PlotArrowOptions>(args, PLOT_ARROW_SIGNATURE, PLOT_ARROW_ARGS_TYPES);
         const { series, title, ...others } = _parsed;
-        const value = Series.from(series).get(0);
+        const value = Series.val(series);
         const options: PlotArrowOptions = this.extractPlotOptions(others);
         const plotKey = this._resolvePlotKey(title, callsiteId);
 
@@ -383,7 +383,7 @@ export class PlotHelper {
             this.context.plots[plotKey] = { data: [], options: { ...options, style: 'bar', overlay }, title, _plotKey: plotKey, _callsiteId: callsiteId };
         }
 
-        const value = [Series.from(open).get(0), Series.from(high).get(0), Series.from(low).get(0), Series.from(close).get(0)];
+        const value = [Series.val(open), Series.val(high), Series.val(low), Series.val(close)];
 
         this.context.plots[plotKey].data.push({
             title,
@@ -406,7 +406,7 @@ export class PlotHelper {
             this.context.plots[plotKey] = { data: [], options: { ...options, style: 'candle', overlay }, title, _plotKey: plotKey, _callsiteId: callsiteId };
         }
 
-        const value = [Series.from(open).get(0), Series.from(high).get(0), Series.from(low).get(0), Series.from(close).get(0)];
+        const value = [Series.val(open), Series.val(high), Series.val(low), Series.val(close)];
 
         this.context.plots[plotKey].data.push({
             title,
@@ -521,10 +521,10 @@ export class FillHelper {
         if (isGradientFill) {
             const _parsed = parseArgsForPineParams<any>(args, GRADIENT_FILL_SIGNATURE, GRADIENT_FILL_ARGS_TYPES);
             const { plot1, plot2, editable, fillgaps, display } = _parsed;
-            const top_value = Series.from(_parsed.top_value).get(0);
-            const bottom_value = Series.from(_parsed.bottom_value).get(0);
-            const top_color = Series.from(_parsed.top_color).get(0);
-            const bottom_color = Series.from(_parsed.bottom_color).get(0);
+            const top_value = Series.val(_parsed.top_value);
+            const bottom_value = Series.val(_parsed.bottom_value);
+            const top_color = Series.val(_parsed.top_color);
+            const bottom_color = Series.val(_parsed.bottom_color);
             const title = typeof _parsed.title === 'string' && _parsed.title ? _parsed.title : undefined;
 
             const p1Key = plot1?._plotKey || plot1?.title;
@@ -574,7 +574,7 @@ export class FillHelper {
 
             // Resolve the color for this bar.
             // The color may be a Series, a param tuple [value, name], or a plain string.
-            const resolvedColor = Series.from(color).get(0);
+            const resolvedColor = Series.val(color);
 
             if (!this.context.plots[fillKey]) {
                 const p1Key = plot1?._plotKey || plot1?.title;

@@ -15,7 +15,7 @@ import { nonNaWindow } from '../utils/nonNaWindow';
  */
 export function range(context: any) {
     return (source: any, _length: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
         if (!(length >= 1)) return NaN;
 
         const series = Series.from(source);

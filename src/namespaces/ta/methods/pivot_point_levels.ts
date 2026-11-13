@@ -51,8 +51,8 @@ export function pivot_point_levels(context: any) {
     return (_type: any, _anchor: any, ...rest: any[]) => {
         // The transpiler appends the call id after the optional `developing` argument.
         const _callId: string | undefined = typeof rest[rest.length - 1] === 'string' ? rest.pop() : undefined;
-        const type = Series.from(_type).get(0);
-        const anchor = Series.from(_anchor).get(0) === true;
+        const type = Series.val(_type);
+        const anchor = Series.val(_anchor) === true;
         const developing = rest.length > 0 && Series.from(rest[0]).get(0) === true;
 
         if (!TYPES.includes(type)) {
@@ -85,10 +85,10 @@ export function pivot_point_levels(context: any) {
         }
 
         const bar: Period = {
-            open: Series.from(context.data.open).get(0),
-            high: Series.from(context.data.high).get(0),
-            low: Series.from(context.data.low).get(0),
-            close: Series.from(context.data.close).get(0),
+            open: Series.val(context.data.open),
+            high: Series.val(context.data.high),
+            low: Series.val(context.data.low),
+            close: Series.val(context.data.close),
         };
 
         let period: Period | null = state.prev.period;

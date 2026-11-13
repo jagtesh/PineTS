@@ -9,7 +9,7 @@ import { stripTickerModifier } from '../tickerModifier';
  * modifiers removed. Both are empty for a symbol without a prefix, as on TradingView.
  */
 function splitSymbol(symbol: any): [string, string] {
-    const value = Series.from(symbol).get(0);
+    const value = Series.val(symbol);
     if (value == null || (typeof value === 'number' && isNaN(value))) return ['', ''];
     const plain = stripTickerModifier(String(value));
     const at = plain.indexOf(':');

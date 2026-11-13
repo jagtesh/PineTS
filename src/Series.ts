@@ -1,10 +1,17 @@
 export class Series {
     /** Value of a read before the first bar: na, or `false` for a Pine v6 bool series (v6 bools are never na). */
-    public beforeStart: any = NaN;
+    public beforeStart: any;
     /** Storage of a `varip` variable: re-executions of a bar do not roll its value back. */
     public varip?: boolean;
 
-    constructor(public data: any[], public offset: number = 0) { }
+    constructor(public data: any[], public offset: number = 0) {
+        // Assigned here rather than as field initializers: the es2020 / node18
+        // bundles lower an initializer to a `__publicField` helper call
+        // (`key in obj` + define), which made every Series several times
+        // costlier to construct — and a Series is built per wrapped argument.
+        this.beforeStart = NaN;
+        this.varip = undefined;
+    }
 
     public get(index: number): any {
         // Pine reads an `na` offset as 0: `close[na]` is the current bar.
@@ -36,6 +43,17 @@ export class Series {
 
     public toArray(): any[] {
         return this.data;
+    }
+
+    /**
+     * Current value of `source` — exactly `Series.from(source).get(0)`, without
+     * allocating a throwaway Series (and its backing array) when `source` is a
+     * primitive. Built-ins unwrap every argument this way, so this is hot.
+     */
+    static val(source: any): any {
+        if (source instanceof Series) return source.get(0);
+        if (source === null || typeof source !== 'object') return source;
+        return Series.from(source).get(0);
     }
 
     static from(source: any): Series {

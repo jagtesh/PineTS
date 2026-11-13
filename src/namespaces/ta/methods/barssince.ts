@@ -31,7 +31,7 @@ export function barssince(context: any) {
             state.lastIdx = context.idx;
         }
 
-        const cond = Series.from(condition).get(0);
+        const cond = Series.val(condition);
 
         // Use committed previous last true index as base
         let lastTrueIndex = state.prevLastTrueIndex;

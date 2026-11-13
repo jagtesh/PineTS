@@ -4,7 +4,7 @@ import { Series } from '../../../Series';
 
 export function sin(context: any) {
     return (source: any) => {
-        return Math.sin(Series.from(source).get(0));
+        return Math.sin(Series.val(source));
     };
 }
 

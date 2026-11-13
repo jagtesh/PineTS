@@ -20,7 +20,7 @@ export class Runtime {
     }
 
     error(message: any): never {
-        const msg = Series.from(message).get(0);
+        const msg = Series.val(message);
         throw new PineRuntimeError(typeof msg === 'string' ? msg : String(msg ?? ''), 'runtime.error');
     }
 }

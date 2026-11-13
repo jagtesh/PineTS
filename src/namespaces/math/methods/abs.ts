@@ -5,6 +5,6 @@ import { Context } from '../../../Context.class';
 
 export function abs(context: Context) {
     return (source: any) => {
-        return Math.abs(Series.from(source).get(0));
+        return Math.abs(Series.val(source));
     };
 }

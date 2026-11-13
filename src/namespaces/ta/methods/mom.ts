@@ -4,7 +4,7 @@ import { Series } from '../../../Series';
 
 export function mom(context: any) {
     return (source: any, _length: any, _callId?: string) => {
-        const length = Series.from(_length).get(0);
+        const length = Series.val(_length);
 
         // Momentum is same as change
         return context.pine.ta.change(source, length, _callId);

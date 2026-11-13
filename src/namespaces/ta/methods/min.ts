@@ -43,7 +43,7 @@ export function min(context: any) {
             state.lastIdx = context.idx;
         }
 
-        const currentValue = Series.from(source).get(0);
+        const currentValue = Series.val(source);
 
         let result: number;
         if (isNaN(currentValue)) {

@@ -27,15 +27,15 @@ import { Series } from '../../../Series';
  */
 export function supertrend(context: any) {
     return (_factor: any, _atrPeriod: any, _callId?: string) => {
-        const atrPeriod = Series.from(_atrPeriod).get(0);
+        const atrPeriod = Series.val(_atrPeriod);
 
         if (!context.taState) context.taState = {};
-        const stateKey = _callId || `supertrend_${Series.from(_factor).get(0)}_${atrPeriod}`;
+        const stateKey = _callId || `supertrend_${Series.val(_factor)}_${atrPeriod}`;
 
         if (!context.taState[stateKey]) {
             context.taState[stateKey] = {
                 // TradingView uses the factor of the first bar for the whole series
-                factor: Series.from(_factor).get(0),
+                factor: Series.val(_factor),
                 lastIdx: -1,
                 // Committed state
                 prevTrSum: 0,
