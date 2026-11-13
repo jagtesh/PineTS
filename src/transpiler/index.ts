@@ -65,6 +65,7 @@ import {
 import { extractPineScriptVersion, pineToJS } from './pineToJS/pineToJS.index';
 import { buildLtfSlices } from './slicing/buildLtfSlices';
 import { verifyClosedWorld } from './analysis/ClosedWorldVerifier';
+import { lowerScalars } from './transformers/ScalarLoweringPass';
 
 /**
  * Resolve the input into PineTS code plus the Pine Script version it came from.
@@ -121,7 +122,7 @@ function getPineTSFromSource(
  */
 export function transpile(
     source: string | Function,
-    options: { debug: boolean; ln?: boolean; verify?: boolean; pineOnly?: boolean; libraries?: Record<string, string> } = { debug: false, ln: false }
+    options: { debug: boolean; ln?: boolean; verify?: boolean; pineOnly?: boolean; lower?: boolean; libraries?: Record<string, string> } = { debug: false, ln: false }
 ): Function {
     // Handle backward compatibility if a boolean is passed (though signature changed)
     if (typeof options === 'boolean') {
@@ -253,10 +254,22 @@ export function transpile(
         },
     });
 
-    const transformedCode = astring.generate(ast, {
+    let transformedCode = astring.generate(ast, {
         generator: customGenerator,
         comments: debug,
     });
+
+    // Scalar lowering: variables that never need a history become JS locals
+    // and pure math arguments lose their `math.param` wrapper (see
+    // ScalarLoweringPass). Runs on the generated string, before verification,
+    // so the verifier still checks exactly what `new Function` compiles. Set
+    // `lower: false` to opt out; skipped under `debug`, whose line comments
+    // the re-generation would drop. The PINETS_DISABLE_LOWERING env var turns
+    // it off globally (differential testing against the unlowered code).
+    const loweringDisabled = (typeof process !== 'undefined') && process?.env?.PINETS_DISABLE_LOWERING === '1';
+    if (options.lower !== false && !debug && !loweringDisabled) {
+        transformedCode = lowerScalars(transformedCode);
+    }
 
     // Closed-world verification. Pine Script (version marker present) describes
     // a closed world TradingView resolves against its built-ins; enforce the

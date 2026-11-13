@@ -1,3 +1,7 @@
+// This file pins the text the MAIN transformation emits. Scalar lowering (a later pass with its
+// own tests in scalar-lowering.test.ts) rewrites that text, so it is switched off here.
+process.env.PINETS_DISABLE_LOWERING = '1';
+
 // SPDX-License-Identifier: AGPL-3.0-only
 // Copyright (C) 2026 LuxAlgo
 

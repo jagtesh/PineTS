@@ -4,7 +4,8 @@ import { Series } from '../../../Series';
 
 export function param(context: any) {
     return (source: any, index: number = 0) => {
-        return Series.from(source).get(index);
+        // Series.val avoids allocating a Series for a primitive in the common index-0 case.
+        return index ? Series.from(source).get(index) : Series.val(source);
     };
 }
 

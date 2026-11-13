@@ -733,6 +733,18 @@ export class Context {
         return this.typedSeries([value], value);
     }
 
+    /**
+     * The value `init` would store for `src` — the current value of a Series,
+     * the tuple inside a wrapped tuple, the newest element of a forward-ordered
+     * array, or `src` itself. The transpiler's scalar lowering emits this for a
+     * variable that lives in a JS local instead of a Series.
+     */
+    val(src: any): any {
+        if (src instanceof Series) return src.get(0);
+        if (Array.isArray(src)) return Array.isArray(src[0]) ? src[0] : src[src.length - 1];
+        return src;
+    }
+
     /** A Series over `data`; a Pine v6 bool series reads `false` before its first bar. */
     private typedSeries(data: any[], value: any, offset: number = 0): Series {
         const series = new Series(data, offset);

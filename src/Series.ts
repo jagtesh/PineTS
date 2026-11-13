@@ -1,14 +1,14 @@
 export class Series {
     /** Value of a read before the first bar: na, or `false` for a Pine v6 bool series (v6 bools are never na). */
-    public beforeStart: any;
+    declare public beforeStart: any;
     /** Storage of a `varip` variable: re-executions of a bar do not roll its value back. */
-    public varip?: boolean;
+    declare public varip?: boolean;
 
     constructor(public data: any[], public offset: number = 0) {
-        // Assigned here rather than as field initializers: the es2020 / node18
-        // bundles lower an initializer to a `__publicField` helper call
-        // (`key in obj` + define), which made every Series several times
-        // costlier to construct — and a Series is built per wrapped argument.
+        // `declare`d and assigned here rather than written as class fields:
+        // the es2020 / node18 bundles lower a class field to a `__publicField`
+        // helper call (`key in obj` + define), which made every Series several
+        // times costlier to construct — and one is built per wrapped argument.
         this.beforeStart = NaN;
         this.varip = undefined;
     }
