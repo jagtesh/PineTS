@@ -3,6 +3,7 @@
         "outDir": "./dist",
         "module": "ESNext",
         "target": "ESNext",
+        "useDefineForClassFields": false,
         "moduleResolution": "node",
         "sourceMap": true,
         "preserveSymlinks": true,
