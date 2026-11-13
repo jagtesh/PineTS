@@ -334,9 +334,24 @@ const evt = pineTS.stream(
 | `live`     | `boolean` | `true`            | Whether to continue fetching live data after processing historical data.                       |
 | `interval` | `number`  | `1000`            | Polling interval in milliseconds for live data.                                                |
 
+### Pushed data: `notify()`
+
+By default a live stream polls its provider every `interval` ms, and waits at least one
+second between re-executions of a still-forming candle so a network API is not hammered.
+A host that already HAS the data — a chart feeding its own bars through a provider
+adapter — does not need either wait. Call `notify()` when the data changes: the stream
+ends its current wait, polls at once and skips the forming-candle throttle. Several
+calls while the stream is busy collapse into one poll. Polling at `interval` continues
+as the fallback, so `notify()` is optional and never required for correctness.
+
+```typescript
+const evt = pineTS.stream(indicator, { live: true });
+feed.onTick(() => evt.notify());
+```
+
 ### Usage
 
-The method returns an object with `on()` and `stop()` methods:
+The method returns an object with `on()`, `stop()` and `notify()` methods:
 
 ```typescript
 // Start streaming

@@ -364,17 +364,51 @@ export class PineTS {
         }
     }
 
+    // Live-stream wake-up (see stream().notify()). `_wakeSleeper` ends the wait in
+    // progress; `_wakePending` remembers a notify that arrived while the stream was
+    // busy, so the next wait returns at once; `_pollNotified` marks the poll that
+    // follows a notify, which skips the forming-candle throttle.
+    private _wakeSleeper: (() => void) | null = null;
+    private _wakePending = false;
+    private _pollNotified = false;
+
+    /** Wait `ms`, or until the stream is notified. Resolves true when ended by a notify. */
+    private _streamSleep(ms: number): Promise<boolean> {
+        if (this._wakePending) {
+            this._wakePending = false;
+            this._pollNotified = true;
+            return Promise.resolve(true);
+        }
+        return new Promise((resolve) => {
+            const timer = setTimeout(() => {
+                this._wakeSleeper = null;
+                resolve(false);
+            }, ms);
+            this._wakeSleeper = () => {
+                clearTimeout(timer);
+                this._wakeSleeper = null;
+                this._pollNotified = true;
+                resolve(true);
+            };
+        });
+    }
+
+    private _streamWake(): void {
+        if (this._wakeSleeper) this._wakeSleeper();
+        else this._wakePending = true;
+    }
+
     /**
      * Stream the results of the Pine Script code.
      * Provides an event-based interface for handling streaming data.
      * @param pineTSCode The Pine Script code to execute
      * @param options Streaming options
-     * @returns Object with on(event, callback) and stop() methods
+     * @returns Object with on(event, callback), stop() and notify() methods
      */
     public stream(
         pineTSCode: Indicator | Function | String,
         options: { pageSize?: number; live?: boolean; interval?: number } = {},
-    ): { on: (event: 'data' | 'error' | 'warning' | 'alert', callback: Function) => void; stop: () => void } {
+    ): { on: (event: 'data' | 'error' | 'warning' | 'alert', callback: Function) => void; stop: () => void; notify: () => void } {
         const { live = true, interval = 1000 } = options;
         const pageSize = options.pageSize || this.data.length; // Default pageSize to full data if not provided
 
@@ -399,6 +433,16 @@ export class PineTS {
 
         const stop = () => {
             stopped = true;
+            // End a pending wait now rather than up to `interval` later.
+            this._streamWake();
+        };
+
+        // A host that is PUSHED its data (a chart feeding its own bars through a
+        // provider adapter) calls this when the data changed: the pending wait ends
+        // and the stream polls immediately, without the forming-candle throttle.
+        // Polling at `interval` stays as the fallback, so calling it is optional.
+        const notify = () => {
+            if (!stopped) this._streamWake();
         };
 
         // Start execution
@@ -426,7 +470,7 @@ export class PineTS {
                         // This block is only reached if enableLiveStream is true and provider yields no data
 
                         // Wait and retry
-                        await new Promise((resolve) => setTimeout(resolve, interval));
+                        await this._streamSleep(interval);
                         continue;
                     }
 
@@ -460,7 +504,7 @@ export class PineTS {
                         // Always throttle when on the last bar (caught up to current data).
                         // For mid-stream historical pages, skip the delay so initial load is fast.
                         if (!isHistorical || isLastBar) {
-                            await new Promise((resolve) => setTimeout(resolve, interval));
+                            await this._streamSleep(interval);
                         }
                     }
                 }
@@ -469,7 +513,7 @@ export class PineTS {
             }
         })();
 
-        return { on, stop };
+        return { on, stop, notify };
     }
 
     /**
@@ -645,8 +689,15 @@ export class PineTS {
 
             // If only the last candle was updated (no new bars), throttle to avoid
             // rapid-fire fetching when the market is closed or candle is still forming
-            if (newCandles === 0 && updatedLastCandle && fetchDuration < 1000) {
-                await new Promise((resolve) => setTimeout(resolve, 1000 - fetchDuration));
+            // A poll the host asked for (stream().notify()) is not throttled: the host
+            // is pushing data it already has, there is no API to protect. If a notify
+            // lands DURING the throttle, the data it announces is newer than what was
+            // just fetched — re-arm the wake so the next wait ends at once and polls again.
+            const notified = this._pollNotified;
+            this._pollNotified = false;
+            if (newCandles === 0 && updatedLastCandle && fetchDuration < 1000 && !notified) {
+                if (await this._streamSleep(1000 - fetchDuration)) this._wakePending = true;
+                this._pollNotified = false;
             }
 
             // #4: Data changed — bump version so secondary contexts know to refresh
